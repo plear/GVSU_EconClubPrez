@@ -88,6 +88,16 @@ ggplot(data=filter(gapminder, year %in% c(1952, 1962, 1972, 1992, 2002)),
   geom_rug() +
   scale_x_log10()
 
+# Map year to shapes 
+ggplot(data=
+	filter(gapminder, year %in% 
+	c(1952, 1962, 1972, 1992, 2002)), 
+	aes(x=gdpPercap, y=lifeExp,
+	  color=continent, shape=year)) +
+   	geom_point() +
+	geom_rug() +
+	scale_x_log10()
+
 # Add facet wrap with one dimension
 ggplot(data= filter(gapminder, year %in% c(1952, 1962, 1972, 1992, 2002)), 
        aes(x=gdpPercap, y=lifeExp, color = continent)) +
