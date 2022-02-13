@@ -85,7 +85,54 @@ ggplot(mi_data_10_ts) +
   scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 
 
+mi_data_10_ts %>%
+  group_by(state, fips, county) %>%
+  arrange(date) %>%
+  mutate(diff = cases  - lag(cases , default = 0)) %>% 
+  filter(county == "Kent")
 
+
+mi_data_10_ts_new_cases <- mi_data_10_ts %>%
+  group_by(state, fips, county) %>%
+  arrange(date) %>%
+  mutate(new_cases = cases  - lag(cases , default = 0))
+
+
+# https://tidyr.tidyverse.org/
+mi_data_10_ts_new_cases <- mi_data_10_ts %>%
+  group_by(state, fips, county) %>%
+  arrange(date) %>%
+  mutate(new_cases = cases  - lag(cases , default = 0),
+         new_deaths = deaths  - lag(deaths , default = 0)) %>% 
+  pivot_longer(cols = c("cases", "deaths", "new_cases","new_deaths"),
+               names_to = "metric",
+               values_to = "count") %>% 
+  ungroup()
+
+
+glimpse(mi_data_10_ts_new_cases)
+
+mi_data_10_ts_new_cases %>% 
+  filter(county == "Genesee", metric %in% c("cases", "new_cases")) %>% 
+  View()
+
+mi_data_10_ts_new_cases %>% 
+  filter(county == "Genesee", metric %in% c("deaths", "new_deaths")) %>% 
+  pivot_wider(names_from = metric, values_from = count) %>% 
+  View()
+
+ggplot(data=mi_data_10_ts_new_cases %>% filter(county == "Kent", metric %in% c("new_cases","new_deaths"))) +
+  geom_line(aes(x=date, y=count, color=metric))
+
+ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_deaths")) +
+  geom_line(aes(x=date, y=count, color=county))
+
+ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_cases")) +
+  geom_line(aes(x=date, y=count, color=county))
+
+ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_cases")) +
+  geom_line(aes(x=date, y=count, color=county)) +
+  facet_grid(county ~ .)
 
 
 
