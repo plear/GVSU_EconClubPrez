@@ -78,8 +78,14 @@ ggplot(mi_data_10_ts) +
   geom_area(aes(x=date, y=cases, fill=county)) +
   # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
   scale_fill_brewer(palette="Paired") +
-  ggthemes::theme_economist() +
-  ggtitle("Total Covid Cases by Country - Top 10 Michigan Counties") +
+  # https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
+  # ggthemes::theme_economist() +
+  # ggthemes::theme_fivethirtyeight() +
+  ggthemes::theme_wsj() +
+  # ggthemes::theme_stata() +
+  # ggthemes::theme_excel() +
+  # ggthemes::theme_tufte() +
+  ggtitle("Total Covid Cases by Country\nTop 10 Michigan Counties") +
   labs(x ="Date", y = "Cases", fill = "County") +
   labs(caption = "Source: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv") +
   scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
@@ -133,6 +139,48 @@ ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_cases")) +
 ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_cases")) +
   geom_line(aes(x=date, y=count, color=county)) +
   facet_grid(county ~ .)
+
+ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_cases")) +
+  geom_line(aes(x=date, y=count, color=county)) +
+  facet_grid(county ~ .) +
+  ggthemes::theme_gdocs() +
+  ggtitle("Total Covid Cases by Country\nTop 10 Michigan Counties") +
+  labs(x ="Date", y = "Cases") +
+  labs(caption = "Source: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv") +
+  # https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
+  scale_y_continuous(labels = scales::unit_format(unit = "K", scale = 1e-3, accuracy = 1)) +
+  theme(legend.position = "none")
+
+
+ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_cases")) +
+  geom_line(aes(x=date, y=count, color=county)) +
+  facet_grid(county ~ .) +
+  ggthemes::theme_gdocs() +
+  ggtitle("Total Covid Cases by Country Top 10 Michigan Counties") +
+  labs(x ="Date", y = "Cases") +
+  labs(caption = "Source: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv") +
+  # https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
+  scale_y_continuous(labels = scales::unit_format(unit = "K", scale = 1e-3, accuracy = 1)) +
+  theme(legend.position = "none") +
+  theme(axis.text.y = element_text(size = 5), 
+        strip.text.y = element_text(size = 8),
+        plot.title = element_text(size=15))
+
+
+ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_deaths")) +
+  geom_line(aes(x=date, y=count, color=county)) +
+  facet_grid(county ~ .) +
+  ggthemes::theme_gdocs() +
+  ggtitle("Total Covid Cases by Country Top 10 Michigan Counties") +
+  labs(x ="Date", y = "Cases") +
+  labs(caption = "Source: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv") +
+  # https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
+  theme(legend.position = "none") +
+  theme(axis.text.y = element_text(size = 5), 
+        strip.text.y = element_text(size = 8),
+        plot.title = element_text(size=15))
+
+
 
 
 
