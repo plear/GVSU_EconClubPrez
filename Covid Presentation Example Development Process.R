@@ -40,15 +40,6 @@ ggplot(data=mi_covid_college) +
 # Time series data
 glimpse(covid_data)
 
-mi_data <- covid_data %>%
-  filter(state=="Michigan") %>% 
-  group_by(county) %>% 
-  summarise(cases=sum(cases), deaths=sum(deaths))
-
-ggplot(mi_data) +
-  geom_col(aes(x=fct_reorder(county, cases), y=cases)) + 
-  coord_flip()
-
 ggplot(covid_data %>% filter(state=="Michigan")) +
   geom_col(aes(x=date, y=cases)) 
 
@@ -58,11 +49,10 @@ ggplot(covid_data %>% filter(state=="Michigan")) +
 
 mi_data_10 <- covid_data %>%
   filter(state=="Michigan") %>% 
-  group_by(county) %>% 
-  summarise(cases=sum(cases), deaths=sum(deaths)) %>% 
-  slice_max(order_by = cases, n = 10) %>% 
-  ungroup()
-
+  filter(date == max((covid_data %>%
+                        filter(state=="Michigan"))$date)) %>% 
+  slice_max(order_by = cases, n = 10)
+  
 mi_data_10_ts <- covid_data %>% 
   filter(state=="Michigan") %>% 
   filter(county %in% mi_data_10$county)
@@ -76,21 +66,25 @@ ggplot(mi_data_10_ts) +
 
 ggplot(mi_data_10_ts) +
   geom_area(aes(x=date, y=cases, fill=county)) +
+  ggtitle("Total Covid Cases by Country Top 10 Michigan Counties") +
+  labs(x ="Date", y = "Cases", fill = "County") +
+  labs(caption = "Source: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv") +
+  scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6)) +
   # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
   scale_fill_brewer(palette="Paired") +
   # https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
-  # ggthemes::theme_economist() +
+  ggthemes::theme_economist() +
   # ggthemes::theme_fivethirtyeight() +
-  ggthemes::theme_wsj() +
+  # ggthemes::theme_wsj() +
   # ggthemes::theme_stata() +
   # ggthemes::theme_excel() +
   # ggthemes::theme_tufte() +
-  ggtitle("Total Covid Cases by Country\nTop 10 Michigan Counties") +
-  labs(x ="Date", y = "Cases", fill = "County") +
-  labs(caption = "Source: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv") +
-  scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
+  theme(axis.text.y = element_text(size = 10), 
+       plot.title = element_text(size=15),
+       plot.caption = element_text(size = 10))
 
 
+# Creating a data set
 mi_data_10_ts %>%
   group_by(state, fips, county) %>%
   arrange(date) %>%
@@ -98,10 +92,11 @@ mi_data_10_ts %>%
   filter(county == "Kent")
 
 
-mi_data_10_ts_new_cases <- mi_data_10_ts %>%
+mi_data_10_ts %>%
   group_by(state, fips, county) %>%
   arrange(date) %>%
-  mutate(new_cases = cases  - lag(cases , default = 0))
+  mutate(new_cases = cases  - lag(cases , default = 0),
+         new_deaths = deaths  - lag(deaths , default = 0))
 
 
 # https://tidyr.tidyverse.org/
@@ -116,22 +111,29 @@ mi_data_10_ts_new_cases <- mi_data_10_ts %>%
   ungroup()
 
 
-glimpse(mi_data_10_ts_new_cases)
-
 mi_data_10_ts_new_cases %>% 
   filter(county == "Genesee", metric %in% c("cases", "new_cases")) %>% 
   View()
 
 mi_data_10_ts_new_cases %>% 
-  filter(county == "Genesee", metric %in% c("deaths", "new_deaths")) %>% 
+  filter(county == "Genesee", metric %in% c("cases", "new_cases")) %>% 
   pivot_wider(names_from = metric, values_from = count) %>% 
   View()
 
 ggplot(data=mi_data_10_ts_new_cases %>% filter(county == "Kent", metric %in% c("new_cases","new_deaths"))) +
   geom_line(aes(x=date, y=count, color=metric))
 
-ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_deaths")) +
-  geom_line(aes(x=date, y=count, color=county))
+ggplot(data=mi_data_10_ts_new_cases %>% 
+         filter(county == "Kent", metric %in% c("new_cases","new_deaths")) %>% 
+         filter(date > max(mi_data_10_ts_new_cases$date) - 13*7)) +
+  geom_line(aes(x=date, y=count, color=metric))
+
+ggplot(data=mi_data_10_ts_new_cases %>% 
+         filter(county == "Kent", metric %in% c("new_cases","new_deaths")) %>% 
+         filter(date < min(mi_data_10_ts_new_cases$date) + 13*7)) +
+  geom_line(aes(x=date, y=count, color=metric))
+
+
 
 ggplot(data=mi_data_10_ts_new_cases %>% filter(metric == "new_cases")) +
   geom_line(aes(x=date, y=count, color=county))

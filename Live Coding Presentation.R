@@ -11,3 +11,8 @@ url_college <- "https://raw.githubusercontent.com/nytimes/covid-19-data/master/c
 
 covid_data <- read_csv(url_counties)  # This is over 2 million records so it may take a while to download
 covid_dataCollege <- read_csv(url_college)
+
+
+
+
+
