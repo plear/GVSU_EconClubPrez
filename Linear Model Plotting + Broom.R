@@ -49,7 +49,7 @@ ggplot(model_actuals3, aes(x=carat)) +
   geom_point(aes(y=price, col=depth)) +
   scale_color_gradient(low = "blue", high = "green", na.value = NA) +
   ggnewscale::new_scale_color() +
-  geom_line(aes(y=.fitted, col=depth), size=5) +
+  geom_line(aes(y=.fitted, col=depth), size=2) +
   scale_color_gradient(low = "yellow", high = "red", na.value = NA)
 
 
