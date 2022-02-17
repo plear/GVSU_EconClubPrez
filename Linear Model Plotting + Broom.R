@@ -37,7 +37,7 @@ ggplot(model_actuals2, aes(x=carat**2)) +
   geom_point(aes(y=price)) +
   geom_line(aes(y=.fitted), col="red")
 
-# Two continous variables
+# Two continuous variables
 model_fit3 <- lm(price ~ carat + depth, data=diamonds)
 
 tidy(model_fit3)
