@@ -20,6 +20,10 @@ ggplot(model_actuals) +
   geom_point(aes(x=carat, y=price)) +
   geom_line(aes(x=carat, y=.fitted), col="red")
 
+ggplot(model_actuals) +
+  geom_point(aes(x=carat, y=price)) +
+  geom_smooth(aes(x=carat, y=price), method = 'lm', se = F)
+
 # Another way to specify this:
 ggplot(model_actuals, aes(x=carat)) +
   geom_point(aes(y=price)) +
